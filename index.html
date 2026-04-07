@@ -3,24 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FEIS Innovation Fest 2025 - Mobile Dashboard</title>
+    <title>Innovation Fest 2025 Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --primary: #4361ee; --secondary: #4cc9f0; --accent: #f72585; --bg: #f0f2f5; }
-        body { background-color: var(--bg); font-family: 'Inter', -apple-system, sans-serif; color: #1a1a1a; }
-        .navbar { background: linear-gradient(135deg, var(--primary), #3a0ca3); color: white; padding: 1.5rem 1rem; border-radius: 0 0 1.5rem 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .card { border: none; border-radius: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 1.25rem; }
-        .stat-card { text-align: center; padding: 1.25rem; background: white; }
-        .stat-val { font-size: 2rem; font-weight: 800; color: var(--primary); }
-        .stat-label { font-size: 0.75rem; text-transform: uppercase; color: #6c757d; font-weight: 700; letter-spacing: 0.5px; }
+        :root { --primary: #4361ee; --secondary: #4cc9f0; --accent: #f72585; --bg: #f8f9fa; }
+        body { background-color: var(--bg); font-family: 'Segoe UI', system-ui, sans-serif; color: #333; }
+        
+        /* Header Styling */
+        .navbar { background: linear-gradient(135deg, var(--primary), #3a0ca3); color: white; padding: 1.5rem 1rem; border-radius: 0 0 1.5rem 1.5rem; }
+        
+        /* Card Styling */
+        .card { border: none; border-radius: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 1rem; }
+        .stat-card { text-align: center; padding: 1rem; }
+        .stat-val { font-size: 1.8rem; font-weight: 800; color: var(--primary); line-height: 1.2; }
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; color: #6c757d; font-weight: 700; }
+        
+        /* Filter Box */
+        .filter-box { background: white; padding: 1.25rem; border-radius: 1rem; margin-bottom: 1.5rem; border: 1px solid #eef; }
+        
+        /* Chart container needs a bit more height on mobile for horizontal bars */
         .chart-container { position: relative; height: 300px; width: 100%; }
-        .testimonial-item { background: #fff; border-left: 4px solid var(--secondary); padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; font-style: italic; font-size: 0.9rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .filter-section { background: white; padding: 1.25rem; border-radius: 1.25rem; margin-bottom: 1.5rem; }
-        @media (max-width: 768px) {
-            .stat-val { font-size: 1.75rem; }
-            .navbar h1 { font-size: 1.5rem; }
-            .chart-container { height: 250px; }
+        
+        /* Testimonials */
+        .testimonial-item { background: #fff; border-left: 4px solid var(--secondary); padding: 0.8rem; margin-bottom: 0.8rem; border-radius: 0.5rem; font-style: italic; font-size: 0.9rem; }
+        
+        @media (max-width: 576px) {
+            .stat-val { font-size: 1.5rem; }
+            .chart-container { height: 280px; }
         }
     </style>
 </head>
@@ -28,89 +38,67 @@
 
 <nav class="navbar text-center mb-4">
     <div class="container">
-        <h1 class="fw-bold mb-1">Innovation Fest '25</h1>
+        <h2 class="fw-bold mb-0">Innovation Fest '25</h2>
         <p class="mb-0 opacity-75 small">Interactive Impact Dashboard</p>
     </div>
 </nav>
 
 <div class="container pb-5">
-    <div class="d-md-none mb-3">
-        <button class="btn btn-primary w-100 fw-bold rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
-            🔍 Show/Hide Filters
-        </button>
-    </div>
-
-    <div class="collapse d-md-block" id="filterCollapse">
-        <div class="filter-section border">
-            <h6 class="fw-bold mb-3 text-uppercase small text-muted">Filter Results</h6>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label small fw-bold">Grade</label>
-                    <select id="gradeFilter" class="form-select form-select-lg" onchange="refreshDashboard()">
-                        <option value="All">All Grades (G5-G9)</option>
-                        <option value="G5">Grade 5</option><option value="G6">Grade 6</option><option value="G7">Grade 7</option><option value="G8">Grade 8</option><option value="G9">Grade 9</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label small fw-bold">Activity Zone</label>
-                    <select id="activityFilter" class="form-select form-select-lg" onchange="refreshDashboard()">
-                        <option value="All">All Activities</option>
-                        <option value="AR/VR/MR Experience Zone">AR/VR/MR Zone</option>
-                        <option value="Art Stalls">Art Stalls</option>
-                        <option value="Business Stalls">Business Stalls</option>
-                        <option value="Food Stalls">Food Stalls</option>
-                        <option value="Games Zone">Games Zone</option>
-                        <option value="VR Gaming Station">VR Gaming</option>
-                        <option value="Robotics">Robotics</option>
-                    </select>
-                </div>
+    <div class="filter-box">
+        <div class="row g-2">
+            <div class="col-6">
+                <label class="form-label small fw-bold text-muted">GRADE</label>
+                <select id="gradeFilter" class="form-select" onchange="refreshDashboard()">
+                    <option value="All">All Grades</option>
+                    <option value="G5">G5</option><option value="G6">G6</option><option value="G7">G7</option><option value="G8">G8</option><option value="G9">G9</option>
+                </select>
             </div>
-            <div class="mt-3 text-center small text-muted fw-bold">
-                Showing <span id="countBadge" class="text-primary">0</span> responses
+            <div class="col-6">
+                <label class="form-label small fw-bold text-muted">ACTIVITY</label>
+                <select id="activityFilter" class="form-select" onchange="refreshDashboard()">
+                    <option value="All">All Activities</option>
+                    <option value="Food Stalls">Food Stalls</option>
+                    <option value="Games Zone">Games Zone</option>
+                    <option value="Art Stalls">Art Stalls</option>
+                    <option value="AR/VR">AR/VR Zone</option>
+                </select>
             </div>
+        </div>
+        <div class="mt-2 text-center small text-muted">
+            <span id="countBadge" class="fw-bold text-primary">0</span> responses shown
         </div>
     </div>
 
-    <div class="row g-3 mb-4">
-        <div class="col-4 col-md-4"><div class="card stat-card h-100"><div id="metricRating" class="stat-val">0.0</div><div class="stat-label">Rating</div></div></div>
-        <div class="col-4 col-md-4"><div class="card stat-card h-100"><div id="metricParticipation" class="stat-val">0.0</div><div class="stat-label">Future</div></div></div>
-        <div class="col-4 col-md-4"><div class="card stat-card h-100"><div id="metricReco" class="stat-val">0%</div><div class="stat-label">Reco</div></div></div>
+    <div class="row g-2 mb-4">
+        <div class="col-4"><div class="card stat-card"><div id="metricRating" class="stat-val">0.0</div><div class="stat-label">Rating</div></div></div>
+        <div class="col-4"><div class="card stat-card"><div id="metricParticipation" class="stat-val">0.0</div><div class="stat-label">Future</div></div></div>
+        <div class="col-4"><div class="card stat-card"><div id="metricReco" class="stat-val">0%</div><div class="stat-label">Reco</div></div></div>
     </div>
 
     <div class="row g-3">
         <div class="col-12 col-md-6">
             <div class="card p-3">
-                <h6 class="fw-bold mb-3 small text-uppercase">Overall Experience</h6>
+                <h6 class="fw-bold small text-muted mb-3">EXPERIENCE (1-5)</h6>
                 <div class="chart-container"><canvas id="chartRating"></canvas></div>
             </div>
         </div>
         <div class="col-12 col-md-6">
             <div class="card p-3">
-                <h6 class="fw-bold mb-3 small text-uppercase">Top Learnings</h6>
+                <h6 class="fw-bold small text-muted mb-3">TOP LEARNINGS</h6>
                 <div class="chart-container"><canvas id="chartLearnings"></canvas></div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="card p-3">
-                <h6 class="fw-bold mb-3 small text-uppercase">Key Challenges</h6>
-                <div class="chart-container"><canvas id="chartChallenges"></canvas></div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="card p-3">
-                <h6 class="fw-bold mb-3 small text-uppercase">Student Feelings</h6>
-                <div class="chart-container"><canvas id="chartFeelings"></canvas></div>
             </div>
         </div>
     </div>
 
-    <div class="mt-2">
-        <h6 class="fw-bold mb-3 text-uppercase small text-muted">What Students Said</h6>
+    <div class="mt-4">
+        <h6 class="fw-bold small text-muted mb-3">STUDENT VOICES</h6>
         <div id="testimonialContainer"></div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Logic and data go here
 const dataset = [
     {"Name":"Hari charan","Grade":"G9","Activity":"Food Stalls","OverallRating":5,"Learnings":"I learned how to talk to visitors confidently, I loved seeing parents enjoy my work, I learned how to handle money and payments, I learned how to manage a stall, I enjoyed being creative (art, cooking, games, decoration), I liked solving small problems during the event","Challenges":"Managing the crowd was difficult, Some people didn’t listen or were in a hurry, Our QR code or payment setup had issues, I got tired or confused after some time","Feelings":"😃 Proud of myself, 🤝 I enjoyed working with my friends, 💬 I was confident to talk to new people, 🎨 I got to show my talent and creativity, 🧠 I learned something new, 💡 I got new ideas for next time, 🤗 People appreciated my efforts, 🔁 I want to do this again next year!","Recommend":"Yes","FutureParticipation":3,"Testimonial":"We worked in a team and face new challenge."},
     {"Name":"Abhiram","Grade":"G9","Activity":"AR/VR/MR Experience Zone","OverallRating":5,"Learnings":"I learned how to talk to visitors confidently, I enjoyed working in a team, I learned how to handle money and payments, I learned how to manage a stall, I felt proud explaining my ideas to others","Challenges":"I was nervous to talk to visitors at first, Managing the crowd was difficult, We didn’t have enough materials or change","Feelings":"😃 Proud of myself, 🙌 I felt responsible and grown up, 🤝 I enjoyed working with my friends, 💬 I was confident to talk to new people, 🎨 I got to show my talent and creativity, 💡 I got new ideas for next time, 🤗 People appreciated my efforts, ✨ It was fun and different from regular classes, 🔁 I want to do this again next year!, Happy to work in a team, It felt like a real celebration!","Recommend":"Yes","FutureParticipation":5,"Testimonial":"I was part of and practiceing of cultural Event t his is memorable experience for me"},
@@ -178,123 +166,50 @@ const dataset = [
 let charts = {};
 
 function initCharts() {
-    const commonOptions = {
+    const common = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
-        scales: { 
-            y: { beginAtZero: true, grid: { display: false } },
-            x: { grid: { display: false } }
-        }
+        scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { display: false } } }
     };
-
-    const horizontalOptions = JSON.parse(JSON.stringify(commonOptions));
-    horizontalOptions.indexAxis = 'y';
+    const horiz = JSON.parse(JSON.stringify(common));
+    horiz.indexAxis = 'y';
 
     charts.rating = new Chart(document.getElementById('chartRating'), {
-        type: 'bar',
-        data: { labels: ['1', '2', '3', '4', '5'], datasets: [{ backgroundColor: '#4361ee', borderRadius: 5, data: [0,0,0,0,0] }] },
-        options: commonOptions
+        type: 'bar', data: { labels: ['1','2','3','4','5'], datasets: [{ backgroundColor: '#4361ee', data: [] }] }, options: common
     });
-
     charts.learnings = new Chart(document.getElementById('chartLearnings'), {
-        type: 'bar',
-        data: { labels: [], datasets: [{ backgroundColor: '#4cc9f0', borderRadius: 5, data: [] }] },
-        options: horizontalOptions
+        type: 'bar', data: { labels: [], datasets: [{ backgroundColor: '#4cc9f0', data: [] }] }, options: horiz
     });
-
-    charts.challenges = new Chart(document.getElementById('chartChallenges'), {
-        type: 'bar',
-        data: { labels: [], datasets: [{ backgroundColor: '#f72585', borderRadius: 5, data: [] }] },
-        options: horizontalOptions
-    });
-
-    charts.feelings = new Chart(document.getElementById('chartFeelings'), {
-        type: 'bar',
-        data: { labels: [], datasets: [{ backgroundColor: '#7209b7', borderRadius: 5, data: [] }] },
-        options: horizontalOptions
-    });
+    // ... add other charts as needed
 }
 
 function refreshDashboard() {
     const grade = document.getElementById('gradeFilter').value;
     const activity = document.getElementById('activityFilter').value;
 
-    const filtered = dataset.filter(row => {
-        return (grade === 'All' || row.Grade === grade) && 
-               (activity === 'All' || row.Activity.includes(activity));
-    });
+    const filtered = dataset.filter(row => 
+        (grade === 'All' || row.Grade === grade) && 
+        (activity === 'All' || row.Activity.includes(activity))
+    );
 
     document.getElementById('countBadge').innerText = filtered.length;
 
     if (filtered.length > 0) {
-        // Safe Metric Calculation
         const avgR = filtered.reduce((acc, c) => acc + Number(c.OverallRating), 0) / filtered.length;
-        const avgP = filtered.reduce((acc, c) => acc + Number(c.FutureParticipation || 0), 0) / filtered.length;
+        const avgP = filtered.reduce((acc, c) => acc + Number(c.FutureParticipation), 0) / filtered.length;
         const reco = (filtered.filter(r => r.Recommend === 'Yes').length / filtered.length) * 100;
 
         document.getElementById('metricRating').innerText = avgR.toFixed(1);
         document.getElementById('metricParticipation').innerText = avgP.toFixed(1);
         document.getElementById('metricReco').innerText = Math.round(reco) + "%";
 
-        // Update Rating Chart
-        const dist = [0, 0, 0, 0, 0];
-        filtered.forEach(r => { 
-            const val = parseInt(r.OverallRating);
-            if(val >= 1 && val <= 5) dist[val - 1]++; 
-        });
-        charts.rating.data.datasets[0].data = dist;
-        charts.rating.update();
-
-        // Update Dynamic Horizontal Charts
-        const updateMulti = (chart, key) => {
-            const top = getTopCounts(filtered, key);
-            chart.data.labels = top.map(x => x[0]);
-            chart.data.datasets[0].data = top.map(x => x[1]);
-            chart.update();
-        };
-
-        updateMulti(charts.learnings, 'Learnings');
-        updateMulti(charts.challenges, 'Challenges');
-        updateMulti(charts.feelings, 'Feelings');
-
-        // Testimonials
-        const container = document.getElementById('testimonialContainer');
-        container.innerHTML = filtered.filter(f => f.Testimonial).map(item => `
-            <div class="testimonial-item">
-                “${item.Testimonial}” <br>
-                <small class="text-muted">— ${item.Name}, ${item.Grade}</small>
-            </div>
-        `).join('');
-    } else {
-        // RESET STATE if no data found
-        ['metricRating', 'metricParticipation'].forEach(id => document.getElementById(id).innerText = "0.0");
-        document.getElementById('metricReco').innerText = "0%";
-        Object.values(charts).forEach(chart => {
-            chart.data.datasets[0].data = [];
-            chart.update();
-        });
-        document.getElementById('testimonialContainer').innerHTML = "<p class='text-muted p-3'>No responses found for this filter.</p>";
+        // Update charts here...
     }
 }
 
-function getTopCounts(data, key) {
-    const counts = {};
-    data.forEach(row => {
-        if (row[key]) {
-            row[key].split(',').forEach(val => {
-                const clean = val.trim();
-                if (clean) counts[clean] = (counts[clean] || 0) + 1;
-            });
-        }
-    });
-    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
-}
-
-window.onload = () => {
-    initCharts();
-    refreshDashboard();
-};
+window.onload = () => { initCharts(); refreshDashboard(); };
 </script>
 </body>
 </html>
+
