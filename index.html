@@ -156,6 +156,7 @@ const dataset = [
     {"Name":"Varun kumar","Grade":"G5","Activity":"Art Stalls (Pebble Art, Tote Bags, Plant Pots, etc.)","OverallRating":5,"Learnings":"I enjoyed being creative (art, cooking, games, decoration)","Challenges":"We didn’t have enough materials or change","Feelings":"😃 Proud of myself, helping others","Recommend":"Yes","FutureParticipation":5,"Testimonial":""}
 ];
 
+
 let charts = {};
 
 function initCharts() {
@@ -163,7 +164,10 @@ function initCharts() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true } }
+        scales: { 
+            y: { beginAtZero: true, grid: { display: false } },
+            x: { grid: { display: false } }
+        }
     };
 
     const horizontalOptions = JSON.parse(JSON.stringify(commonOptions));
@@ -171,40 +175,27 @@ function initCharts() {
 
     charts.rating = new Chart(document.getElementById('chartRating'), {
         type: 'bar',
-        data: { labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'], datasets: [{ backgroundColor: '#4361ee', data: [0,0,0,0,0] }] },
+        data: { labels: ['1', '2', '3', '4', '5'], datasets: [{ backgroundColor: '#4361ee', borderRadius: 5, data: [0,0,0,0,0] }] },
         options: commonOptions
     });
 
     charts.learnings = new Chart(document.getElementById('chartLearnings'), {
         type: 'bar',
-        data: { labels: [], datasets: [{ backgroundColor: '#4cc9f0', data: [] }] },
+        data: { labels: [], datasets: [{ backgroundColor: '#4cc9f0', borderRadius: 5, data: [] }] },
         options: horizontalOptions
     });
 
     charts.challenges = new Chart(document.getElementById('chartChallenges'), {
         type: 'bar',
-        data: { labels: [], datasets: [{ backgroundColor: '#f72585', data: [] }] },
+        data: { labels: [], datasets: [{ backgroundColor: '#f72585', borderRadius: 5, data: [] }] },
         options: horizontalOptions
     });
 
     charts.feelings = new Chart(document.getElementById('chartFeelings'), {
         type: 'bar',
-        data: { labels: [], datasets: [{ backgroundColor: '#7209b7', data: [] }] },
+        data: { labels: [], datasets: [{ backgroundColor: '#7209b7', borderRadius: 5, data: [] }] },
         options: horizontalOptions
     });
-}
-
-function getTopCounts(data, key, limit = 8) {
-    const counts = {};
-    data.forEach(row => {
-        if (row[key]) {
-            row[key].split(',').forEach(val => {
-                const cleanVal = val.trim();
-                if (cleanVal) counts[cleanVal] = (counts[cleanVal] || 0) + 1;
-            });
-        }
-    });
-    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, limit);
 }
 
 function refreshDashboard() {
@@ -212,47 +203,74 @@ function refreshDashboard() {
     const activity = document.getElementById('activityFilter').value;
 
     const filtered = dataset.filter(row => {
-        const gradeMatch = (grade === 'All' || row.Grade === grade);
-        const activityMatch = (activity === 'All' || row.Activity.includes(activity));
-        return gradeMatch && activityMatch;
+        return (grade === 'All' || row.Grade === grade) && 
+               (activity === 'All' || row.Activity.includes(activity));
     });
 
     document.getElementById('countBadge').innerText = filtered.length;
 
     if (filtered.length > 0) {
-        const avgR = filtered.reduce((acc, c) => acc + c.OverallRating, 0) / filtered.length;
-        const avgP = filtered.reduce((acc, c) => acc + (c.FutureParticipation || 0), 0) / filtered.length;
+        // Safe Metric Calculation
+        const avgR = filtered.reduce((acc, c) => acc + Number(c.OverallRating), 0) / filtered.length;
+        const avgP = filtered.reduce((acc, c) => acc + Number(c.FutureParticipation || 0), 0) / filtered.length;
         const reco = (filtered.filter(r => r.Recommend === 'Yes').length / filtered.length) * 100;
 
         document.getElementById('metricRating').innerText = avgR.toFixed(1);
         document.getElementById('metricParticipation').innerText = avgP.toFixed(1);
         document.getElementById('metricReco').innerText = Math.round(reco) + "%";
 
+        // Update Rating Chart
         const dist = [0, 0, 0, 0, 0];
-        filtered.forEach(r => { if(r.OverallRating >= 1) dist[r.OverallRating - 1]++; });
+        filtered.forEach(r => { 
+            const val = parseInt(r.OverallRating);
+            if(val >= 1 && val <= 5) dist[val - 1]++; 
+        });
         charts.rating.data.datasets[0].data = dist;
         charts.rating.update();
 
-        const updateMultiChart = (chartObj, dataKey) => {
-            const topData = getTopCounts(filtered, dataKey);
-            chartObj.data.labels = topData.map(d => d[0]);
-            chartObj.data.datasets[0].data = topData.map(d => d[1]);
-            chartObj.update();
+        // Update Dynamic Horizontal Charts
+        const updateMulti = (chart, key) => {
+            const top = getTopCounts(filtered, key);
+            chart.data.labels = top.map(x => x[0]);
+            chart.data.datasets[0].data = top.map(x => x[1]);
+            chart.update();
         };
 
-        updateMultiChart(charts.learnings, 'Learnings');
-        updateMultiChart(charts.challenges, 'Challenges');
-        updateMultiChart(charts.feelings, 'Feelings');
+        updateMulti(charts.learnings, 'Learnings');
+        updateMulti(charts.challenges, 'Challenges');
+        updateMulti(charts.feelings, 'Feelings');
 
+        // Testimonials
         const container = document.getElementById('testimonialContainer');
-        container.innerHTML = '';
-        filtered.filter(f => f.Testimonial).forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'testimonial-item';
-            div.innerHTML = `“${item.Testimonial}” <br><small class="text-muted">— ${item.Name}, ${item.Grade}</small>`;
-            container.appendChild(div);
+        container.innerHTML = filtered.filter(f => f.Testimonial).map(item => `
+            <div class="testimonial-item">
+                “${item.Testimonial}” <br>
+                <small class="text-muted">— ${item.Name}, ${item.Grade}</small>
+            </div>
+        `).join('');
+    } else {
+        // RESET STATE if no data found
+        ['metricRating', 'metricParticipation'].forEach(id => document.getElementById(id).innerText = "0.0");
+        document.getElementById('metricReco').innerText = "0%";
+        Object.values(charts).forEach(chart => {
+            chart.data.datasets[0].data = [];
+            chart.update();
         });
+        document.getElementById('testimonialContainer').innerHTML = "<p class='text-muted p-3'>No responses found for this filter.</p>";
     }
+}
+
+function getTopCounts(data, key) {
+    const counts = {};
+    data.forEach(row => {
+        if (row[key]) {
+            row[key].split(',').forEach(val => {
+                const clean = val.trim();
+                if (clean) counts[clean] = (counts[clean] || 0) + 1;
+            });
+        }
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
 }
 
 window.onload = () => {
