@@ -40,23 +40,28 @@
                     <label class="form-label small fw-bold text-muted">GRADE</label>
                     <select id="gradeFilter" class="form-select" onchange="refreshDashboard()">
                         <option value="All">All Grades</option>
-                        <option value="G5">Grade 5</option>
-                        <option value="G9">Grade 9</option>
+                        <option value="G5">G5</option><option value="G6">G6</option><option value="G7">G7</option><option value="G8">G8</option><option value="G9">G9</option>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label class="form-label small fw-bold text-muted">ACTIVITY AREA</label>
                     <select id="activityFilter" class="form-select" onchange="refreshDashboard()">
                         <option value="All">All Activities</option>
+                        <option value="AR/VR/MR Experience Zone">AR/VR/MR Experience Zone</option>
+                        <option value="Art Stalls (Pebble Art, Tote Bags, Plant Pots, etc.)">Art Stalls</option>
+                        <option value="Business Stalls (Jewellery, Decor, Mandala, etc.)">Business Stalls</option>
+                        <option value="Face Painting & Tattoos">Face Painting & Tattoos</option>
+                        <option value="Flashmob Surprise">Flashmob Surprise</option>
                         <option value="Food Stalls">Food Stalls</option>
-                        <option value="Games Zone">Games Zone</option>
-                        <option value="Art Stalls">Art Stalls</option>
-                        <option value="AR/VR/MR Experience Zone">AR/VR/MR Zone</option>
+                        <option value="Games Zone (Hopscotch, Arcade, Ping Pong, etc.)">Games Zone</option>
+                        <option value="Robotics (Smart Dustbin & Bujji)">Robotics</option>
+                        <option value="Student Band Performance/Emceeing">Student Band</option>
                         <option value="VR Gaming Station">VR Gaming Station</option>
+                        <option value="Wish Tree Canvas Activity">Wish Tree Canvas</option>
                     </select>
                 </div>
                 <div class="pt-3 border-top text-center">
-                    <div id="countBadge" class="h4 fw-bold text-primary mb-0">60</div>
+                    <div id="countBadge" class="h4 fw-bold text-primary mb-0">0</div>
                     <div class="small text-muted">Total Responses</div>
                 </div>
             </div>
@@ -64,9 +69,9 @@
 
         <div class="col-lg-9">
             <div class="row g-3 mb-4">
-                <div class="col-md-4"><div class="card stat-card"><div id="metricRating" class="stat-val">4.7</div><div class="stat-label">Avg. Rating</div></div></div>
-                <div class="col-md-4"><div class="card stat-card"><div id="metricParticipation" class="stat-val">4.8</div><div class="stat-label">Retention Score</div></div></div>
-                <div class="col-md-4"><div class="card stat-card"><div id="metricReco" class="stat-val">100%</div><div class="stat-label">Recommendation</div></div></div>
+                <div class="col-md-4"><div class="card stat-card"><div id="metricRating" class="stat-val">0.0</div><div class="stat-label">Avg. Rating</div></div></div>
+                <div class="col-md-4"><div class="card stat-card"><div id="metricParticipation" class="stat-val">0.0</div><div class="stat-label">Future Likelihood</div></div></div>
+                <div class="col-md-4"><div class="card stat-card"><div id="metricReco" class="stat-val">0%</div><div class="stat-label">Recommendation</div></div></div>
             </div>
 
             <div class="row g-4">
